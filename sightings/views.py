@@ -1,8 +1,9 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.views import APIView
+from django.db import IntegrityError
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Sighting
+from .models import Sighting, SightingConfirmation
 from .serializers import SightingSerializer
 from .permissions import CanCreateSighting, CanDeleteSighting, CanConfirmSighting
 
@@ -19,8 +20,8 @@ class SightingListCreateView(generics.ListCreateAPIView):
 
     def get_permissions(self):
         if self.request.method == 'POST':
-            self.permission_classes = [IsAuthenticated, CanCreateSighting]
-        return super().get_permissions()
+            return [IsAuthenticated(), CanCreateSighting()]
+        return [IsAuthenticated()]
 
 class SightingDetailView(generics.RetrieveDestroyAPIView):
     queryset = Sighting.objects.all()
@@ -38,6 +39,12 @@ class ConfirmSightingView(APIView):
 
         if sighting.created_by_id == request.user.id:
             return Response({"detail": "Cannot confirm your own sighting"}, status=status.HTTP_400_BAD_REQUEST)
-        sighting.confirmed_by.add(request.user.id)
-        sighting.save()
+        try:
+            SightingConfirmation.objects.create(
+                sighting=sighting,
+                user_id=request.user.id,
+                user_role=request.user.role
+            )
+        except IntegrityError:
+            return Response({"detail": "You have already confirmed this sighting"},status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Sighting confirmed"}, status=status.HTTP_200_OK)

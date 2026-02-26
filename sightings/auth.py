@@ -1,9 +1,8 @@
 import os
 import jwt
+from django.conf import settings
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-
-SECRET_KEY = os.environ.get("SECRET_KEY")
 
 class JWTUser:
     def __init__(self, user_id, role):
@@ -25,7 +24,7 @@ class JWTAuthentication(BaseAuthentication):
         token = parts[1]
 
         try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Token expired")
         except jwt.InvalidTokenError:
