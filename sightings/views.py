@@ -41,4 +41,3 @@ class ConfirmSightingView(APIView):
         sighting.confirmed_by.add(request.user.id)
         sighting.save()
         return Response({"message": "Sighting confirmed"}, status=status.HTTP_200_OK)
-    
