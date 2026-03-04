@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from django.db import IntegrityError
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Sighting, SightingConfirmation
 from .serializers import SightingSerializer
 from .permissions import CanCreateSighting, CanDeleteSighting, CanConfirmSighting
@@ -23,10 +24,11 @@ class SightingListCreateView(generics.ListCreateAPIView):
             return [IsAuthenticated(), CanCreateSighting()]
         return [IsAuthenticated()]
 
-class SightingDetailView(generics.RetrieveDestroyAPIView):
+class SightingDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Sighting.objects.all()
     serializer_class = SightingSerializer
     permission_classes = [IsAuthenticated, CanDeleteSighting]
+    parser_classes = [MultiPartParser, FormParser]
 
 class ConfirmSightingView(APIView):
     permission_classes = [IsAuthenticated, CanConfirmSighting]
