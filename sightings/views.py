@@ -15,6 +15,7 @@ class SightingListCreateView(generics.ListCreateAPIView):
     queryset = Sighting.objects.all()
     serializer_class = SightingSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def perform_create(self, serializer):
         user = self.request.user
