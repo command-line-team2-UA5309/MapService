@@ -2,7 +2,7 @@ name: Build and push MapService to ECR
 
 on:
   push:
-    branches: ["main", "feature/CLT-106-add-workflow-for-ecr"]
+    branches: ["main"]
 
 permissions:
   id-token: write
