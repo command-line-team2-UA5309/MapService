@@ -19,8 +19,6 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
-AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL")
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Application definition
@@ -42,7 +40,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+cors_origins = os.getenv("CORS_ALLOWED_ORIGINS")
+CORS_ALLOWED_ORIGINS = cors_origins.split(",") if cors_origins else []
 
 ROOT_URLCONF = 'configs.urls'
 
